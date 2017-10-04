@@ -259,6 +259,25 @@ createArray(3, 2); // [new Array(2),
                    //  new Array(2)]
 */
 
+/****************************************************************
+Add worker function
+*****************************************************************/
+function addWorker()
+{
+	workers[numberOfWorkers] = new Worker();
+	numberOfWorkers+=1;
+}
+/****************************************************************
+Remove worker function
+*****************************************************************/
+function removeWorker()
+{
+	if(numberOfWorkers>0)
+	{
+		numberOfWorkers-=1;
+		workers.splice(numberOfWorkers, 1);
+	}
+}
 
 /****************************************************************
 Cycle through workers
@@ -321,6 +340,9 @@ curStage.setupThreeStep();
 var gameclock = setInterval("gameLoop()", 500);
 
 </script>
+
+<button onclick="addWorker()">Add Worker</button>
+<button onclick="removeWorker()">Remove Worker</button>
 
 <div id = "counter"></div>
 
