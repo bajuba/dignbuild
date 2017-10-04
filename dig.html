@@ -16,7 +16,7 @@ body{ font-family: Courier;
 /*********************************************************
 To-Do URGENT:
 
--Add Worker array to iterate through actions/draws - Logan
+
 
 -function to add and remove workers from the worker array
 
@@ -24,9 +24,9 @@ To-Do URGENT:
 
 -Add a check for the stage to update necessary visual changes(slopes for dug ground?)
 
--Add an inventory area to track collected items - Justin
+-Add a way to track finished temples
 
--Add support for dynamic level size
+-fix the workers brain, add in the function logic for clearing digging and building
 ************************************************************
 Future Ideas and Goals:
 
@@ -90,7 +90,13 @@ this.digs
 this.tree = 0
 this.rock = 0
 }
+/*********************************************************
 
+**********************************************************/
+CurrentStage.prototype.debrisCheck = function(){
+
+	
+}
 /*********************************************************
 Method for the game loop to redraw the stage to track
 movement
@@ -225,7 +231,9 @@ The worker checks to see if he is clearing, digging, or building
 **********************************************************/
 Worker.prototype.jobCheck=function()
 {
-
+	if (curStage.debrisCheck()){
+	
+	}
 }
 
 /*********************************************************
