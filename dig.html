@@ -1,3 +1,4 @@
+
 <style>
 
 body{ font-family:courier;
@@ -44,6 +45,8 @@ Future Ideas and Goals:
 /*********************************************************
 Adds spans with coordinate based ID's
 **********************************************************/
+var counter = 0
+
 function addSpans(x, y){
 
 	for(i=0;i<x;i++){
@@ -215,6 +218,11 @@ Worker.prototype.action= function(){
 					this.item = curStage.grid[this.x-1][this.y].text;
 					//removing the item from the stage array
 					curStage.grid[this.x-1][this.y].text ="_";
+					
+					//Increments by 1 every time a debris is brought back
+					counter = counter + 1;
+					document.getElementById("counter").innerHTML = counter
+					
 				}
 		}	
 	}
@@ -280,3 +288,6 @@ curStage.setupThreeStep();
 var gameclock = setInterval("gameLoop()", 500);
 
 </script>
+
+<div id = "counter"></div>
+>>>>>>> a4a342ee4f65bdca43b68c3799a621d19f1715e2
