@@ -1,0 +1,282 @@
+<style>
+
+body{ font-family:courier;
+}
+
+</style>
+<br><br>
+<br><br>
+<br><br>
+<div id="stage">
+
+</div>
+
+<script>
+
+/*********************************************************
+To-Do URGENT:
+
+-Add Worker array to iterate through actions/draws
+
+-function to add and remove workers from the worker array
+
+-add ability for workers to dig (and move vertically along the ground)
+
+-Add a check for the stage to update necessary visual changes(slopes for dug ground?)
+
+-Add an inventory area to track collected items
+
+-Add support for dynamic level size
+************************************************************
+Future Ideas and Goals:
+
+-add enemies
+-when finishing a temple you earn favor for upgrades?
+-add a shop/upgrades
+-add larger temple construction sites
+-locally store your progress
+-add coinhive
+-host on a site
+
+**********************************************************/
+
+
+/*********************************************************
+Adds spans with coordinate based ID's
+**********************************************************/
+function addSpans(x, y){
+
+	for(i=0;i<x;i++){
+	document.getElementById("stage").innerHTML+="|"
+		for(k=0;k<y;k++){
+			document.getElementById("stage").innerHTML+="<span id='"+k+" "+i+"'>&nbsp;</span>";
+		}
+	document.getElementById("stage").innerHTML+="|<br>"
+
+	}
+
+}
+/*********************************************************
+Constructor for objects held in the stage array
+for now they just hold the text that displays in the level
+for this object
+**********************************************************/
+function Spot(text){
+	this.text = text;
+	
+}
+
+
+/*********************************************************
+Constructor for objects held in the stage array
+for now they just hold the text that displays in the level
+for this object
+**********************************************************/
+function CurrentStage(){
+
+this.type
+this.grid = createArray(20, 6);
+this.clears
+this.digs
+this.builds
+}
+/*********************************************************
+Method for the game loop to redraw the stage to track
+movement
+**********************************************************/
+CurrentStage.prototype.draw = function(){
+
+	for(i=0;i<20;i++){
+	
+		for(k=0;k<6;k++){
+			
+			if( this.grid[i][k].text == " ")
+			document.getElementById(i+" "+k).innerHTML="&nbsp;";
+			else
+			document.getElementById(i+" "+k).innerHTML=this.grid[i][k].text;
+			
+		}
+
+	}
+}
+/*********************************************************
+Method for building your own stage.  Stages are limited to
+20x6 right now.
+**********************************************************/
+CurrentStage.prototype.setupThreeStep = function(){
+	//building the initial stage blocks for a 3-step pyramid level
+	// T=Tree ,=rock  _=dirt_ground
+	var level = "                    "+
+				"                    "+
+				"                    "+
+				"__T__T_■_,___TTTTTT_"+
+				"____________________"+
+				"____________________";
+	//clears required
+	this.clears = 4;
+	//digs required
+	this.digs = 4;
+	//builds required
+	this.builds = 13;
+	
+	//Entering the level into the array
+	var count = 0;
+	for(i=0;i<6;i++){
+	
+		for(k=0;k<20;k++){
+			var piece = level.substr(count,1);
+			
+			this.grid[k][i] = new Spot(piece);
+			count++;
+		}
+	}
+	
+}
+/*********************************************************
+borrowed code from stackoverflow for creating n-dimension array
+**********************************************************/
+function createArray(length) {
+    var arr = new Array(length || 0),
+        i = length;
+
+    if (arguments.length > 1) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        while(i--) arr[length-1 - i] = createArray.apply(this, args);
+    }
+
+    return arr;
+}
+/*********************************************************
+little worker, works so hard digging, hauling, and building
+**********************************************************/
+function Worker(){
+	this.x = 19;
+	this.y = 3;
+	
+	//randomizing worker symbol
+	var sym = Math.floor(Math.random() * (10 - 0));
+	//alert(sym);
+	switch(sym) {
+    case 0:
+        this.text = "☼";
+        break;
+    case 1:
+        this.text = "☺";
+        break;
+	case 2:
+        this.text = "z";
+        break;
+	case 3:
+        this.text = "♥";
+        break;
+	case 4:
+        this.text = "♂";
+        break;
+	case 5:
+        this.text = "♀";
+        break;
+	case 6:
+        this.text = "♠";
+        break;
+	case 7:
+        this.text = "☻";
+        break;
+	case 8:
+        this.text = "♣";
+        break;
+	case 9:
+        this.text = "♦";
+        break;
+    default:
+        this.text = "§";
+	}
+	
+	this.item = "&nbsp;";
+	this.clears=0;
+	this.digs=0;
+	this.builds=0;
+}
+/*********************************************************
+the worker analyzes his situation and act accordingly
+to clear the area, dig the pit, and build the temple.
+**********************************************************/
+Worker.prototype.action= function(){
+	//bob's hand are empty
+	if (this.item=="&nbsp;"){
+		//clearing stage
+		if (this.clears < curStage.clears){
+				//checking for debris
+				if( curStage.grid[this.x-1][this.y].text == "_"){
+					//moving left
+					this.x-=1;
+				}
+				else{
+					//picking up the debris when found and adding it to bobs items
+					this.item = curStage.grid[this.x-1][this.y].text;
+					//removing the item from the stage array
+					curStage.grid[this.x-1][this.y].text ="_";
+				}
+		}	
+	}
+	//bob now has an item and must move it off the right side of the screen
+	else{
+		if(this.x !=19){
+		//move right
+			this.x+=1;
+		}
+		else{
+			this.item = "&nbsp;";
+		}
+	}
+}
+/*********************************************************
+draws the worker on the screen according to his coords
+**********************************************************/
+Worker.prototype.draw = function(){
+	document.getElementById(this.x+" "+this.y).innerHTML=this.text;
+	document.getElementById(this.x+" "+(this.y-1)).innerHTML=this.item;
+}
+/*********************************************************
+runs the game in order, currently 1 tick per sec
+**********************************************************/
+function gameLoop(){
+//alert("tick");
+//redraw the stage every tick
+
+bob.action();
+jim.action();
+sally.action();
+
+curStage.draw();
+
+bob.draw();
+jim.draw();
+sally.draw();
+}
+/*
+createArray();     // [] or new Array()
+
+createArray(2);    // new Array(2)
+
+createArray(3, 2); // [new Array(2),
+                   //  new Array(2),
+                   //  new Array(2)]
+*/
+
+
+//actual code
+
+curStage = new CurrentStage();
+bob = new Worker();
+jim = new Worker();
+sally = new Worker();
+//curStage.grid[0][0]=1;
+
+//alert(curStage.grid[0][0]);
+//setting up the page
+addSpans(6,20);
+curStage.setupThreeStep();
+
+var gameclock = setInterval("gameLoop()", 10);
+
+</script>
