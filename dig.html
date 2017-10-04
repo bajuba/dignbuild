@@ -94,8 +94,15 @@ this.rock = 0
 
 **********************************************************/
 CurrentStage.prototype.debrisCheck = function(){
-
+	for(i=0;i<this.x;i++){
+		
+		if(this.grid[i][this.groundFloor].text == "T" || this.grid[i][this.groundFloor].text == ","){
+			
+			return true;
+		}
 	
+	}
+	return false;
 }
 /*********************************************************
 Method for the game loop to redraw the stage to track
@@ -126,7 +133,7 @@ CurrentStage.prototype.setupThreeStep = function(){
 	var level = "                    "+
 				"                    "+
 				"                    "+
-				"__T__T_T_,___TTTTTT_"+
+				"__________T_________"+
 				"____________________"+
 				"____________________";
 	
@@ -136,12 +143,12 @@ CurrentStage.prototype.setupThreeStep = function(){
 						"___xxxxx____________"+
 						"____xxx_____________"+
 						"_____x______________";
-	//clears required
+	
+	// track the row for debris
+	this.groundFloor = 3;
+	
+	//mark this for removal
 	this.clears = 4;
-	//digs required
-	this.digs = 4;
-	//builds required
-	this.builds = 13;
 	
 	//Entering the level into the array
 	var count = 0;
@@ -231,17 +238,33 @@ The worker checks to see if he is clearing, digging, or building
 **********************************************************/
 Worker.prototype.jobCheck=function()
 {
+	//checking for debris
 	if (curStage.debrisCheck()){
-	
+		this.job = "clearing";
+	}
+	//no debris
+	else{
+		//checking hand
+		if (handCheck()){
+			this.job = "clearing";
+		}
+		//hands empty
+		else{
+			this.job = "digging";
+		}
 	}
 }
 
 /*********************************************************
 The worker checks if he's carrying something
+true means yes
 **********************************************************/
 Worker.prototype.handCheck=function()
 {
-
+	if( this.item == " "){
+		return false;
+	}
+	return true;
 }
 
 /*********************************************************
@@ -386,6 +409,7 @@ curStage.draw();
 
 DrawWorkers();
 
+alert(curStage.debrisCheck());
 }
 
 //actual code
