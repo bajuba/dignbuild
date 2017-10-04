@@ -162,6 +162,11 @@ little worker, works so hard digging, hauling, and building
 function Worker(){
 	this.x = 19;
 	this.y = 3;
+	//preplanned target
+	this.workTarget="";
+		
+	// Current Job
+	this.job="clearing";
 	
 	//randomizing worker symbol
 	var sym = Math.floor(Math.random() * (10 - 0));
@@ -206,6 +211,50 @@ function Worker(){
 	this.digs=0;
 	this.builds=0;
 }
+
+/*********************************************************
+The worker checks to see if he is clearing, digging, or building
+**********************************************************/
+worker.prototype.jobCheck=function()
+{
+
+}
+
+/*********************************************************
+The worker checks if he's carrying something
+**********************************************************/
+worker.prototype.handCheck=function()
+{
+
+}
+
+/*********************************************************
+The worker digs
+**********************************************************/
+worker.prototype.dig=function()
+{
+
+}
+
+/*********************************************************
+The worker picks up debris
+**********************************************************/
+worker.prototype.pickupDebris=function()
+{
+
+}
+
+/*********************************************************
+The worker goes to obtain brick
+**********************************************************/
+worker.prototype.obtainBrick=function()
+{
+
+}
+
+
+
+
 /*********************************************************
 the worker analyzes his situation and act accordingly
 to clear the area, dig the pit, and build the temple.
