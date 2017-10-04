@@ -1,4 +1,3 @@
-
 <style>
 
 body{ font-family: Courier;
@@ -38,7 +37,8 @@ Future Ideas and Goals:
 -locally store your progress
 -add coinhive
 -host on a site
-************************************************************
+
+**********************************************************
 Suggestions:
 
 
@@ -48,6 +48,7 @@ Suggestions:
 /*********************************************************
 Adds spans with coordinate based ID's
 **********************************************************/
+var counter = 0
 
 function addSpans(x, y){
 
@@ -83,8 +84,8 @@ this.type
 this.grid = createArray(20, 6);
 this.clears
 this.digs
-this.builds
 this.tree = 0
+this.rock = 0
 }
 
 /*********************************************************
@@ -125,7 +126,6 @@ CurrentStage.prototype.setupThreeStep = function(){
 	this.digs = 4;
 	//builds required
 	this.builds = 13;
-	
 	
 	//Entering the level into the array
 	var count = 0;
@@ -224,6 +224,10 @@ Worker.prototype.action= function(){
 					//removing the item from the stage array
 					curStage.grid[this.x-1][this.y].text ="_";
 					
+					//Increments by 1 every time a debris is brought back
+					counter = counter + 1;
+					document.getElementById("counter").innerHTML = counter
+					
 				}
 		}	
 	}
@@ -238,13 +242,15 @@ Worker.prototype.action= function(){
 			if (this.item == "T"){
 				curStage.tree = curStage.tree + 1;
 			}
+			else if (this.item == ","){
+				curStage.rock = curStage.rock + 1;
+			}
 			this.item = "&nbsp;";
 			document.getElementById("tree").innerHTML = curStage.tree;
+			document.getElementById("rock").innerHTML = curStage.rock;
 		}
 	}
 }
-
-
 /*********************************************************
 draws the worker on the screen according to his coords
 **********************************************************/
@@ -263,6 +269,25 @@ createArray(3, 2); // [new Array(2),
                    //  new Array(2)]
 */
 
+/****************************************************************
+Add worker function
+*****************************************************************/
+function addWorker()
+{
+	workers[numberOfWorkers] = new Worker();
+	numberOfWorkers+=1;
+}
+/****************************************************************
+Remove worker function
+*****************************************************************/
+function removeWorker()
+{
+	if(numberOfWorkers>0)
+	{
+		numberOfWorkers-=1;
+		workers.splice(numberOfWorkers, 1);
+	}
+}
 
 /****************************************************************
 Cycle through workers
@@ -303,7 +328,7 @@ DrawWorkers();
 //actual code
 
 //number of workers
-numberOfWorkers = 1;
+numberOfWorkers = 2;
 
 curStage = new CurrentStage();
 
@@ -326,5 +351,8 @@ var gameclock = setInterval("gameLoop()", 500);
 
 </script>
 
-<p>Tree: <span id = "tree"></span></p>
+<button onclick="addWorker()">Add Worker</button>
+<button onclick="removeWorker()">Remove Worker</button>
 
+<p>Tree: <span id = "tree"></span></p>
+<p>Rock: <span id = "rock"></span></p>
