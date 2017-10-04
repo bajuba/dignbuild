@@ -50,7 +50,6 @@ Add random gems or fossils durring digging phase
 /*********************************************************
 Adds spans with coordinate based ID's
 **********************************************************/
-var counter = 0
 
 function addSpans(x, y){
 
@@ -225,10 +224,6 @@ Worker.prototype.action= function(){
 					this.item = curStage.grid[this.x-1][this.y].text;
 					//removing the item from the stage array
 					curStage.grid[this.x-1][this.y].text ="_";
-					
-					//Increments by 1 every time a debris is brought back
-					counter = counter + 1;
-					document.getElementById("counter").innerHTML = counter
 					
 				}
 		}	
