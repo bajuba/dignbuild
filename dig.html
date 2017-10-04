@@ -244,20 +244,7 @@ Worker.prototype.draw = function(){
 	document.getElementById(this.x+" "+this.y).innerHTML=this.text;
 	document.getElementById(this.x+" "+(this.y-1)).innerHTML=this.item;
 }
-/*********************************************************
-runs the game in order, currently 1 tick per sec
-**********************************************************/
-function gameLoop(){
-//alert("tick");
-//redraw the stage every tick
 
-workCycleAction();
-
-curStage.draw();
-
-DrawWorkers();
-
-}
 /*
 createArray();     // [] or new Array()
 
@@ -290,6 +277,20 @@ function DrawWorkers()
 	}
 }
 
+/*********************************************************
+runs the game in order, currently 1 tick per sec
+**********************************************************/
+function gameLoop(){
+//alert("tick");
+//redraw the stage every tick
+
+workCycleAction();
+
+curStage.draw();
+
+DrawWorkers();
+
+}
 
 //actual code
 
