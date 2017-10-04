@@ -251,15 +251,12 @@ function gameLoop(){
 //alert("tick");
 //redraw the stage every tick
 
-bob.action();
-jim.action();
-sally.action();
+workCycleAction();
 
 curStage.draw();
 
-bob.draw();
-jim.draw();
-sally.draw();
+DrawWorkers();
+
 }
 /*
 createArray();     // [] or new Array()
@@ -272,12 +269,43 @@ createArray(3, 2); // [new Array(2),
 */
 
 
+/****************************************************************
+Cycle through workers
+*****************************************************************/
+function workCycleAction()
+{
+    for(var w=0;w<numberOfWorkers;w++)
+	{
+		workers[w].action();
+	}
+}
+/****************************************************************
+
+****************************************************************/
+function DrawWorkers()
+{
+    for(var w=0;w<numberOfWorkers;w++)
+	{
+		workers[w].draw();
+	}
+}
+
+
 //actual code
 
+//number of workers
+numberOfWorkers = 3;
+
 curStage = new CurrentStage();
-bob = new Worker();
-jim = new Worker();
-sally = new Worker();
+
+///create worker array
+workers = new Array(numberOfWorkers);
+//make new workers
+for(var w=0;w<numberOfWorkers;w++)
+{
+	workers[w] = new Worker();
+}
+
 //curStage.grid[0][0]=1;
 
 //alert(curStage.grid[0][0]);
