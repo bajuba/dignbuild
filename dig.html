@@ -79,10 +79,12 @@ Constructor for objects held in the stage array
 for now they just hold the text that displays in the level
 for this object
 **********************************************************/
-function CurrentStage(){
+function CurrentStage(x, y){
 
 this.type
-this.grid = createArray(20, 6);
+this.grid = createArray(x, y);
+this.height= y;
+this.width = x;
 this.clears
 this.digs
 this.tree = 0
@@ -95,9 +97,9 @@ movement
 **********************************************************/
 CurrentStage.prototype.draw = function(){
 
-	for(i=0;i<20;i++){
+	for(i=0;i<this.x;i++){
 	
-		for(k=0;k<6;k++){
+		for(k=0;k<this.y;k++){
 			
 			if( this.grid[i][k].text == " ")
 			document.getElementById(i+" "+k).innerHTML="&nbsp;";
@@ -119,6 +121,13 @@ CurrentStage.prototype.setupThreeStep = function(){
 				"                    "+
 				"                    "+
 				"__T__T_T_,___TTTTTT_"+
+				"____________________"+
+				"____________________";
+	
+	var levelFinish = "                    "+
+				"                    "+
+				"                    "+
+				"____________________"+
 				"____________________"+
 				"____________________";
 	//clears required
@@ -327,7 +336,7 @@ DrawWorkers();
 //number of workers
 numberOfWorkers = 2;
 
-curStage = new CurrentStage();
+curStage = new CurrentStage(20, 6);
 
 ///create worker array
 workers = new Array(numberOfWorkers);
