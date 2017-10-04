@@ -1,6 +1,7 @@
+
 <style>
 
-body{ font-family:courier;
+body{ font-family: Courier;
 }
 
 </style>
@@ -16,15 +17,15 @@ body{ font-family:courier;
 /*********************************************************
 To-Do URGENT:
 
--Add Worker array to iterate through actions/draws
+-Add Worker array to iterate through actions/draws - Logan
 
 -function to add and remove workers from the worker array
 
--add ability for workers to dig (and move vertically along the ground)
+-add ability for workers to dig (and move vertically along the ground) - James
 
 -Add a check for the stage to update necessary visual changes(slopes for dug ground?)
 
--Add an inventory area to track collected items
+-Add an inventory area to track collected items - Justin
 
 -Add support for dynamic level size
 ************************************************************
@@ -37,6 +38,9 @@ Future Ideas and Goals:
 -locally store your progress
 -add coinhive
 -host on a site
+************************************************************
+Suggestions:
+
 
 **********************************************************/
 
@@ -44,7 +48,6 @@ Future Ideas and Goals:
 /*********************************************************
 Adds spans with coordinate based ID's
 **********************************************************/
-var counter = 0
 
 function addSpans(x, y){
 
@@ -81,7 +84,9 @@ this.grid = createArray(20, 6);
 this.clears
 this.digs
 this.builds
+this.tree = 0
 }
+
 /*********************************************************
 Method for the game loop to redraw the stage to track
 movement
@@ -111,7 +116,7 @@ CurrentStage.prototype.setupThreeStep = function(){
 	var level = "                    "+
 				"                    "+
 				"                    "+
-				"__T__T_■_,___TTTTTT_"+
+				"__T__T_T_,___TTTTTT_"+
 				"____________________"+
 				"____________________";
 	//clears required
@@ -120,6 +125,7 @@ CurrentStage.prototype.setupThreeStep = function(){
 	this.digs = 4;
 	//builds required
 	this.builds = 13;
+	
 	
 	//Entering the level into the array
 	var count = 0;
@@ -218,10 +224,6 @@ Worker.prototype.action= function(){
 					//removing the item from the stage array
 					curStage.grid[this.x-1][this.y].text ="_";
 					
-					//Increments by 1 every time a debris is brought back
-					counter = counter + 1;
-					document.getElementById("counter").innerHTML = counter
-					
 				}
 		}	
 	}
@@ -232,10 +234,17 @@ Worker.prototype.action= function(){
 			this.x+=1;
 		}
 		else{
+			//Checks if it's a tree
+			if (this.item == "T"){
+				curStage.tree = curStage.tree + 1;
+			}
 			this.item = "&nbsp;";
+			document.getElementById("tree").innerHTML = curStage.tree;
 		}
 	}
 }
+
+
 /*********************************************************
 draws the worker on the screen according to his coords
 **********************************************************/
@@ -243,23 +252,7 @@ Worker.prototype.draw = function(){
 	document.getElementById(this.x+" "+this.y).innerHTML=this.text;
 	document.getElementById(this.x+" "+(this.y-1)).innerHTML=this.item;
 }
-/*********************************************************
-runs the game in order, currently 1 tick per sec
-**********************************************************/
-function gameLoop(){
-//alert("tick");
-//redraw the stage every tick
 
-bob.action();
-jim.action();
-sally.action();
-
-curStage.draw();
-
-bob.draw();
-jim.draw();
-sally.draw();
-}
 /*
 createArray();     // [] or new Array()
 
@@ -271,12 +264,57 @@ createArray(3, 2); // [new Array(2),
 */
 
 
+/****************************************************************
+Cycle through workers
+*****************************************************************/
+function workCycleAction()
+{
+    for(var w=0;w<numberOfWorkers;w++)
+	{
+		workers[w].action();
+	}
+}
+/****************************************************************
+
+****************************************************************/
+function DrawWorkers()
+{
+    for(var w=0;w<numberOfWorkers;w++)
+	{
+		workers[w].draw();
+	}
+}
+
+/*********************************************************
+runs the game in order, currently 1 tick per sec
+**********************************************************/
+function gameLoop(){
+//alert("tick");
+//redraw the stage every tick
+
+workCycleAction();
+
+curStage.draw();
+
+DrawWorkers();
+
+}
+
 //actual code
 
+//number of workers
+numberOfWorkers = 1;
+
 curStage = new CurrentStage();
-bob = new Worker();
-jim = new Worker();
-sally = new Worker();
+
+///create worker array
+workers = new Array(numberOfWorkers);
+//make new workers
+for(var w=0;w<numberOfWorkers;w++)
+{
+	workers[w] = new Worker();
+}
+
 //curStage.grid[0][0]=1;
 
 //alert(curStage.grid[0][0]);
@@ -288,4 +326,5 @@ var gameclock = setInterval("gameLoop()", 500);
 
 </script>
 
-<div id = "counter"></div>
+<p>Tree: <span id = "tree"></span></p>
+
