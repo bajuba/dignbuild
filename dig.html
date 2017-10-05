@@ -56,6 +56,7 @@ var rock=",";
 var tree="T";
 var ground="_";
 var brick="█";
+var dirt="□";
 
 /*********************************************************
 Adds spans with coordinate based ID's
@@ -90,7 +91,9 @@ this.grid = createArray(x, y);
 this.gridFinish = createArray(x, y);
 this.y= y;
 this.x = x;
+//remove?
 this.clears
+//remove?
 this.digs
 this.tree = 0
 this.rock = 0
@@ -109,10 +112,29 @@ CurrentStage.prototype.debrisCheck = function(){
 	return false;
 }
 /*********************************************************
+returns true if there are unclaimed digs
+**********************************************************/
+CurrentStage.prototype.digCheck = function(){
+	
+	for(i=0;i<this.digSpots.length;i++){
+		if(this.digSpots[i] != "claimed"){
+			return true;
+		}
+	}
+	return false;
+}
+/*********************************************************
 returns the next unclaimed dig and changes the value in 
 the array to claimed
 **********************************************************/
 CurrentStage.prototype.nextDig = function(){
+	for(i=0;i<this.digSpots.length;i++){
+		if(this.digSpots[i] != "claimed"){
+			var digSpot = this.digSpots[i];
+			this.digSpots[i] = "claimed";
+			return digSpot;
+		}
+	}
 	
 }
 /*********************************************************
@@ -275,6 +297,8 @@ function Worker(){
 	}
 	
 	this.item = "&nbsp;";
+	
+	//are these used anywhere? remove?
 	this.clears=0;
 	this.digs=0;
 	this.builds=0;
@@ -343,7 +367,7 @@ The worker looks at the square to his right
 **********************************************************/
 Worker.prototype.rightCheck=function(){
 	
-		if(curStage.grid[this.x+1][this.y].text==brick){
+		if(curStage.grid[this.x+1][this.y].text=="_" && curStage.grid[this.x+1][this.y-1].text=="_"){
 			
 			return "upRight";
 		}
@@ -375,7 +399,7 @@ Worker.prototype.moveLeft=function(){
 	}
 }
 /*********************************************************
-The worker moves right
+The worker moves right (down when encountering air)
 **********************************************************/
 Worker.prototype.moveRight=function(){
 	//logic for moving up and down
@@ -420,11 +444,18 @@ Worker.prototype.pickupDebris=function(){
   curStage.grid[this.x-1][this.y].text ="_";
 }
 /*********************************************************
-The worker deposits debris
+The worker drops off debris
 **********************************************************/
-Worker.prototype.pickupDebris=function(){
-  this.item = curStage.grid[this.x-1][this.y].text;
-  curStage.grid[this.x-1][this.y].text ="_";
+Worker.prototype.dropDebris=function(){
+	if (this.item == "T"){
+		curStage.tree = curStage.tree + 1;
+	}
+	else if (this.item == ","){
+		curStage.rock = curStage.rock + 1;
+	}
+	this.item = "&nbsp;";
+	document.getElementById("tree").innerHTML = curStage.tree;
+	document.getElementById("rock").innerHTML = curStage.rock;
 }
 /*********************************************************
 The worker goes to obtain brick
@@ -443,21 +474,11 @@ if (this.jobCheck() == "clearing"){
 	if(this.handCheck()){
 		
 		if(this.homeCheck()){
-			//Checks if it's a tree
-			if (this.item == "T"){
-				curStage.tree = curStage.tree + 1;
-			}
-			else if (this.item == ","){
-				curStage.rock = curStage.rock + 1;
-			}
-			this.item = "&nbsp;";
-			document.getElementById("tree").innerHTML = curStage.tree;
-			document.getElementById("rock").innerHTML = curStage.rock;
+			this.dropDebris();
 		}
 		else{
 			this.moveRight();
 		}
-		
 	}
 	else{
 		if(this.checkDebris()){
@@ -469,10 +490,18 @@ if (this.jobCheck() == "clearing"){
 	}
 }
 //digging
-else if (this.jobCheck == "digging"){
-
-	//check if I need work
+else if (this.jobCheck() == "digging"){
 	//check if there is work
+	if(curStage.digCheck()){
+		//check if I need work
+		if(this.workTarget=""){
+			//take the next available claim
+		}
+	}
+	//all work is claimed
+	else{
+	
+	}
 	//obtain a dig location
 	//if hands are empty proceed to dig location
 	//if at location take dirt_ground
