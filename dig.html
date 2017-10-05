@@ -22,8 +22,6 @@ body{ font-family: Courier;
 /*********************************************************
 To-Do URGENT:
 
--function to add and remove workers from the worker array
-
 -add ability for workers to dig (and move vertically along the ground) - James
 
 -Add a check for the stage to update necessary visual changes(slopes for dug ground?)
@@ -76,9 +74,7 @@ function Spot(text){
 	
 }
 /*********************************************************
-Constructor for objects held in the stage array
-for now they just hold the text that displays in the level
-for this object
+Constructor for the current stage
 **********************************************************/
 function CurrentStage(x, y){
 this.type
@@ -321,6 +317,34 @@ The worker moves right
 **********************************************************/
 Worker.prototype.moveRight=function(){
 	this.x+=1;
+}
+/*********************************************************
+The worker moves left-up
+**********************************************************/
+Worker.prototype.moveLeftUp=function(){
+	this.x-=1;
+	this.y-=1;
+}
+/*********************************************************
+The worker moves right-up
+**********************************************************/
+Worker.prototype.moveRightUp=function(){
+	this.x+=1;
+	this.y-=1;
+}
+/*********************************************************
+The worker moves right-down
+**********************************************************/
+Worker.prototype.moveRightDown=function(){
+	this.x+=1;
+	this.y+=1;
+}
+/*********************************************************
+The worker moves left-down
+**********************************************************/
+Worker.prototype.moveLeftDown=function(){
+	this.x-=1;
+	this.y+=1;
 }
 /*********************************************************
 The worker digs
