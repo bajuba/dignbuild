@@ -11,12 +11,16 @@ body{ font-family: Courier;
 
 </div>
 
+<button onclick="addWorker()">Add Worker</button>
+<button onclick="removeWorker()">Remove Worker</button>
+
+<p>Tree: <span id = "tree"></span></p>
+<p>Rock: <span id = "rock"></span></p>
+
 <script>
 
 /*********************************************************
 To-Do URGENT:
-
-
 
 -function to add and remove workers from the worker array
 
@@ -50,7 +54,6 @@ Add random gems or fossils durring digging phase
 /*********************************************************
 Adds spans with coordinate based ID's
 **********************************************************/
-
 function addSpans(x, y){
 
 	for(i=0;i<x;i++){
@@ -72,15 +75,12 @@ function Spot(text){
 	this.text = text;
 	
 }
-
-
 /*********************************************************
 Constructor for objects held in the stage array
 for now they just hold the text that displays in the level
 for this object
 **********************************************************/
 function CurrentStage(x, y){
-
 this.type
 this.grid = createArray(x, y);
 this.gridFinish = createArray(x, y);
@@ -271,12 +271,10 @@ function Worker(){
 	this.digs=0;
 	this.builds=0;
 }
-
 /*********************************************************
 The worker checks to see if he is clearing, digging, or building
 **********************************************************/
-Worker.prototype.jobCheck=function()
-{
+Worker.prototype.jobCheck=function(){
 	//checking for debris
 	if (curStage.debrisCheck()){
 		return "clearing";
@@ -293,13 +291,11 @@ Worker.prototype.jobCheck=function()
 		}
 	}
 }
-
 /*********************************************************
 The worker checks if he's carrying something
 true means yes
 **********************************************************/
-Worker.prototype.handCheck=function()
-{
+Worker.prototype.handCheck=function(){
 	if( this.item == "&nbsp;"){
 		return false;
 	}
@@ -308,8 +304,7 @@ Worker.prototype.handCheck=function()
 /*********************************************************
 The worker checks if he's home
 **********************************************************/
-Worker.prototype.homeCheck=function()
-{
+Worker.prototype.homeCheck=function(){
 	if( this.x == 19){
 		return true;
 	}
@@ -318,30 +313,25 @@ Worker.prototype.homeCheck=function()
 /*********************************************************
 The worker moves left
 **********************************************************/
-Worker.prototype.moveLeft=function()
-{
+Worker.prototype.moveLeft=function(){
 	this.x-=1;
 }
 /*********************************************************
 The worker moves right
 **********************************************************/
-Worker.prototype.moveRight=function()
-{
+Worker.prototype.moveRight=function(){
 	this.x+=1;
 }
-
 /*********************************************************
 The worker digs
 **********************************************************/
-Worker.prototype.dig=function()
-{
+Worker.prototype.dig=function(){
 
 }
 /*********************************************************
 The worker checks for debris
 **********************************************************/
-Worker.prototype.checkDebris=function()
-{
+Worker.prototype.checkDebris=function(){
   if(curStage.grid[this.x-1][this.y].text == "_"){
 	return false;
   }
@@ -350,35 +340,27 @@ Worker.prototype.checkDebris=function()
 /*********************************************************
 The worker picks up debris
 **********************************************************/
-Worker.prototype.pickupDebris=function()
-{
+Worker.prototype.pickupDebris=function(){
   this.item = curStage.grid[this.x-1][this.y].text;
   curStage.grid[this.x-1][this.y].text ="_";
 }
 /*********************************************************
 The worker deposits debris
 **********************************************************/
-Worker.prototype.pickupDebris=function()
-{
+Worker.prototype.pickupDebris=function(){
   this.item = curStage.grid[this.x-1][this.y].text;
   curStage.grid[this.x-1][this.y].text ="_";
 }
 /*********************************************************
 The worker goes to obtain brick
 **********************************************************/
-Worker.prototype.obtainBrick=function()
-{
+Worker.prototype.obtainBrick=function(){
 
 }
-
-
-
-
 /*********************************************************
 the worker analyses his situation and act accordingly
 to clear the area, dig the pit, and build the temple.
 **********************************************************/
-
 Worker.prototype.action= function(){
 //clearing
 if (this.jobCheck() == "clearing"){
@@ -421,49 +403,6 @@ else{
 	}
 
 }
-
-/*  Old Action
-Worker.prototype.action= function(){
-	//bob's hand are empty
-	if (this.item=="&nbsp;"){
-		//clearing stage
-		if (this.clears < curStage.clears){
-				//checking for debris
-				if( curStage.grid[this.x-1][this.y].text == "_"){
-					//moving left
-					this.x-=1;
-				}
-				else{
-					//picking up the debris when found and adding it to bobs items
-					this.item = curStage.grid[this.x-1][this.y].text;
-					//removing the item from the stage array
-					curStage.grid[this.x-1][this.y].text ="_";
-					
-				}
-		}	
-	}
-	//bob now has an item and must move it off the right side of the screen
-	else{
-		if(this.x !=19){
-		//move right
-			this.x+=1;
-		}
-		else{
-			//Checks if it's a tree
-			if (this.item == "T"){
-				curStage.tree = curStage.tree + 1;
-			}
-			else if (this.item == ","){
-				curStage.rock = curStage.rock + 1;
-			}
-			this.item = "&nbsp;";
-			document.getElementById("tree").innerHTML = curStage.tree;
-			document.getElementById("rock").innerHTML = curStage.rock;
-		}
-	}
-}
-*/
-
 /*********************************************************
 draws the worker on the screen according to his coords
 **********************************************************/
@@ -471,52 +410,36 @@ Worker.prototype.draw = function(){
 	document.getElementById(this.x+" "+this.y).innerHTML=this.text;
 	document.getElementById(this.x+" "+(this.y-1)).innerHTML=this.item;
 }
-
-/*
-createArray();     // [] or new Array()
-
-createArray(2);    // new Array(2)
-
-createArray(3, 2); // [new Array(2),
-                   //  new Array(2),
-                   //  new Array(2)]
-*/
-
 /****************************************************************
 Add worker function
 *****************************************************************/
-function addWorker()
-{
+function addWorker(){
 	workers[numberOfWorkers] = new Worker();
 	numberOfWorkers+=1;
 }
 /****************************************************************
 Remove worker function
 *****************************************************************/
-function removeWorker()
-{
+function removeWorker(){
 	if(numberOfWorkers>0)
 	{
 		numberOfWorkers-=1;
 		workers.splice(numberOfWorkers, 1);
 	}
 }
-
 /****************************************************************
-Cycle through workers
+Cycle through workers and do actions
 *****************************************************************/
-function workCycleAction()
-{
+function workCycleAction(){
     for(var w=0;w<numberOfWorkers;w++)
 	{
 		workers[w].action();
 	}
 }
 /****************************************************************
-
+cycle through and draw the workers
 ****************************************************************/
-function DrawWorkers()
-{
+function DrawWorkers(){
     for(var w=0;w<numberOfWorkers;w++)
 	{
 		workers[w].draw();
@@ -565,8 +488,4 @@ var gameclock = setInterval("gameLoop()", 500);
 
 </script>
 
-<button onclick="addWorker()">Add Worker</button>
-<button onclick="removeWorker()">Remove Worker</button>
 
-<p>Tree: <span id = "tree"></span></p>
-<p>Rock: <span id = "rock"></span></p>
