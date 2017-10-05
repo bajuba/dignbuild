@@ -343,7 +343,16 @@ The worker looks at the square to his right
 **********************************************************/
 Worker.prototype.rightCheck=function(){
 	
-		return curStage.grid[this.x+1][this.y].text;
+		if(curStage.grid[this.x+1][this.y].text==brick){
+			
+			return "upRight";
+		}
+		else if(curStage.grid[this.x+1][this.y].text==" "){
+			return "downRight";
+		}
+		else{
+			return "right";
+		}
 	
 }
 /*********************************************************
@@ -357,7 +366,7 @@ Worker.prototype.moveLeft=function(){
 	this.x-=1;
 	this.y+=1;
 	}
-	if(this.leftCheck() == "upLeft"){
+	else if(this.leftCheck() == "upLeft"){
 	this.x-=1;
 	this.y-=1;
 	}
@@ -369,24 +378,19 @@ Worker.prototype.moveLeft=function(){
 The worker moves right
 **********************************************************/
 Worker.prototype.moveRight=function(){
-	this.x+=1;
-}
-
-/*********************************************************
-The worker moves right-up
-**********************************************************/
-Worker.prototype.moveRightUp=function(){
-	this.x+=1;
-	this.y-=1;
-}
-/*********************************************************
-The worker moves right-down
-**********************************************************/
-Worker.prototype.moveRightDown=function(){
+	//logic for moving up and down
+	if(this.rightCheck() == "downRight"){
 	this.x+=1;
 	this.y+=1;
+	}
+	if(this.rightCheck() == "upRight"){
+	this.x+=1;
+	this.y-=1;
+	}
+	else{
+	this.x+=1;
+	}
 }
-
 /*********************************************************
 The worker claims a dig spot
 **********************************************************/
@@ -476,7 +480,7 @@ else if (this.jobCheck == "digging"){
 	//if home drop dirt and remove work target
 
 }
-//building
+//building NOTE!!!!!!! remember to add an underscore above each brick placed for movement tracking!!!!
 else{
 
 	}
