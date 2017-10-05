@@ -49,14 +49,22 @@ Add random gems or fossils durring digging phase
 **********************************************************/
 
 
+/**************************************************
+Globals
+**************************************************/
+var rock=",";
+var tree="T";
+var ground="_";
+var brick="█";
+
 /*********************************************************
 Adds spans with coordinate based ID's
 **********************************************************/
 function addSpans(x, y){
 
-	for(i=0;i<x;i++){
+	for(i=0;i<y;i++){
 	document.getElementById("stage").innerHTML+="|"
-		for(k=0;k<y;k++){
+		for(k=0;k<x;k++){
 			document.getElementById("stage").innerHTML+="<span id='"+k+" "+i+"'>&nbsp;</span>";
 		}
 	document.getElementById("stage").innerHTML+="|<br>"
@@ -311,10 +319,51 @@ Worker.prototype.homeCheck=function(){
 	return false;
 }
 /*********************************************************
+The worker looks at the three squares to his left up and down
+and returns whether he needs to go up or down to continue left
+OXX   W = worker
+OWX   X = space not checked
+OXX   O = space check
+**********************************************************/
+Worker.prototype.leftCheck=function(){
+	
+		if(curStage.grid[this.x-1][this.y].text==brick){
+			
+			return "upLeft";
+		}
+		else if(curStage.grid[this.x-1][this.y].text==" "){
+			return "downLeft";
+		}
+		else{
+			return "left";
+		}
+}
+/*********************************************************
+The worker looks at the square to his right
+**********************************************************/
+Worker.prototype.rightCheck=function(){
+	
+		return curStage.grid[this.x+1][this.y].text;
+	
+}
+/*********************************************************
 The worker moves left
+he only needs to go up left on bricks
+goes down left when encountering empty air
 **********************************************************/
 Worker.prototype.moveLeft=function(){
+	//logic for moving up and down
+	if(this.leftCheck() == "downLeft"){
 	this.x-=1;
+	this.y+=1;
+	}
+	if(this.leftCheck() == "upLeft"){
+	this.x-=1;
+	this.y-=1;
+	}
+	else{
+	this.x-=1;
+	}
 }
 /*********************************************************
 The worker moves right
@@ -523,7 +572,7 @@ for(var w=0;w<numberOfWorkers;w++)
 
 //alert(curStage.grid[0][0]);
 //setting up the page
-addSpans(6,20);
+addSpans(20,6);
 curStage.setupThreeStep();
 
 var gameclock = setInterval("gameLoop()", 500);
