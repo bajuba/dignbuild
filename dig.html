@@ -90,18 +90,22 @@ this.digSpots = new Array();
 this.buildSpots = new Array();
 }
 /*********************************************************
-
+checks if there is any debris on the stage
 **********************************************************/
 CurrentStage.prototype.debrisCheck = function(){
 	for(i=0;i<this.x;i++){
-		
 		if(this.grid[i][this.groundFloor].text == "T" || this.grid[i][this.groundFloor].text == ","){
-			
 			return true;
 		}
-	
 	}
 	return false;
+}
+/*********************************************************
+returns the next unclaimed dig and changes the value in 
+the array to claimed
+**********************************************************/
+CurrentStage.prototype.nextDig = function(){
+	
 }
 /*********************************************************
 Method for the game loop to redraw the stage to track
@@ -223,7 +227,7 @@ function Worker(){
 		
 	// Current Job
 	this.job="clearing";
-	this.workTarget;
+	this.workTarget="";
 	//randomizing worker symbol
 	var sym = Math.floor(Math.random() * (10 - 0));
 	//alert(sym);
@@ -347,6 +351,12 @@ Worker.prototype.moveLeftDown=function(){
 	this.y+=1;
 }
 /*********************************************************
+The worker claims a dig spot
+**********************************************************/
+Worker.prototype.claimDig=function(){
+	this.workTarget = curStage.nextDig();
+}
+/*********************************************************
 The worker digs
 **********************************************************/
 Worker.prototype.dig=function(){
@@ -419,6 +429,14 @@ if (this.jobCheck() == "clearing"){
 }
 //digging
 else if (this.jobCheck == "digging"){
+
+	//check if I need work
+	//check if there is work
+	//obtain a dig location
+	//if hands are empty proceed to dig location
+	//if at location take dirt_ground
+	//if hands full travel right
+	//if home drop dirt and remove work target
 
 }
 //building
