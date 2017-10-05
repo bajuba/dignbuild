@@ -136,7 +136,7 @@ CurrentStage.prototype.setupThreeStep = function(){
 	var level = "                    "+
 				"                    "+
 				"                    "+
-				"__________T_________"+
+				"____T_____T___T_____"+
 				"____________________"+
 				"____________________";
 	
@@ -227,7 +227,7 @@ function Worker(){
 		
 	// Current Job
 	this.job="clearing";
-	
+	this.workTarget;
 	//randomizing worker symbol
 	var sym = Math.floor(Math.random() * (10 - 0));
 	//alert(sym);
@@ -279,17 +279,17 @@ Worker.prototype.jobCheck=function()
 {
 	//checking for debris
 	if (curStage.debrisCheck()){
-		this.job = "clearing";
+		return "clearing";
 	}
 	//no debris
 	else{
 		//checking hand
-		if (handCheck()){
-			this.job = "clearing";
+		if (this.handCheck()){
+			return "clearing";
 		}
 		//hands empty
 		else{
-			this.job = "digging";
+			return "digging";
 		}
 	}
 }
@@ -300,10 +300,34 @@ true means yes
 **********************************************************/
 Worker.prototype.handCheck=function()
 {
-	if( this.item == " "){
+	if( this.item == "&nbsp;"){
 		return false;
 	}
 	return true;
+}
+/*********************************************************
+The worker checks if he's home
+**********************************************************/
+Worker.prototype.homeCheck=function()
+{
+	if( this.x == 19){
+		return true;
+	}
+	return false;
+}
+/*********************************************************
+The worker moves left
+**********************************************************/
+Worker.prototype.moveLeft=function()
+{
+	this.x-=1;
+}
+/*********************************************************
+The worker moves right
+**********************************************************/
+Worker.prototype.moveRight=function()
+{
+	this.x+=1;
 }
 
 /*********************************************************
@@ -313,15 +337,32 @@ Worker.prototype.dig=function()
 {
 
 }
-
+/*********************************************************
+The worker checks for debris
+**********************************************************/
+Worker.prototype.checkDebris=function()
+{
+  if(curStage.grid[this.x-1][this.y].text == "_"){
+	return false;
+  }
+	return true;
+}
 /*********************************************************
 The worker picks up debris
 **********************************************************/
 Worker.prototype.pickupDebris=function()
 {
-
+  this.item = curStage.grid[this.x-1][this.y].text;
+  curStage.grid[this.x-1][this.y].text ="_";
 }
-
+/*********************************************************
+The worker deposits debris
+**********************************************************/
+Worker.prototype.pickupDebris=function()
+{
+  this.item = curStage.grid[this.x-1][this.y].text;
+  curStage.grid[this.x-1][this.y].text ="_";
+}
 /*********************************************************
 The worker goes to obtain brick
 **********************************************************/
@@ -334,9 +375,54 @@ Worker.prototype.obtainBrick=function()
 
 
 /*********************************************************
-the worker analyzes his situation and act accordingly
+the worker analyses his situation and act accordingly
 to clear the area, dig the pit, and build the temple.
 **********************************************************/
+
+Worker.prototype.action= function(){
+//clearing
+if (this.jobCheck() == "clearing"){
+	//alert("yes");
+	if(this.handCheck()){
+		
+		if(this.homeCheck()){
+			//Checks if it's a tree
+			if (this.item == "T"){
+				curStage.tree = curStage.tree + 1;
+			}
+			else if (this.item == ","){
+				curStage.rock = curStage.rock + 1;
+			}
+			this.item = "&nbsp;";
+			document.getElementById("tree").innerHTML = curStage.tree;
+			document.getElementById("rock").innerHTML = curStage.rock;
+		}
+		else{
+			this.moveRight();
+		}
+		
+	}
+	else{
+		if(this.checkDebris()){
+			this.pickupDebris();
+		}
+		else{
+			this.moveLeft();
+		}
+	}
+}
+//digging
+else if (this.jobCheck == "digging"){
+
+}
+//building
+else{
+
+	}
+
+}
+
+/*  Old Action
 Worker.prototype.action= function(){
 	//bob's hand are empty
 	if (this.item=="&nbsp;"){
@@ -376,6 +462,8 @@ Worker.prototype.action= function(){
 		}
 	}
 }
+*/
+
 /*********************************************************
 draws the worker on the screen according to his coords
 **********************************************************/
