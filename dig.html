@@ -16,7 +16,9 @@ body{ font-family: Courier;
 
 <p>Tree: <span id = "tree"></span></p>
 <p>Rock: <span id = "rock"></span></p>
+<div id="worker">
 
+</div>
 <script>
 
 /*********************************************************
@@ -130,10 +132,13 @@ returns the next unclaimed dig and changes the value in
 the array to claimed
 **********************************************************/
 CurrentStage.prototype.nextDig = function(){
+	
 	for(i=0;i<this.digSpots.length;i++){
+		
 		if(this.digSpots[i] != "claimed"){
 			var digSpot = this.digSpots[i];
 			this.digSpots[i] = "claimed";
+			
 			return digSpot;
 		}
 	}
@@ -169,7 +174,7 @@ CurrentStage.prototype.setupThreeStep = function(){
 	var level = "                    "+
 				"                    "+
 				"                    "+
-				"____T_____T___T_____"+
+				"______________T_____"+
 				"____________________"+
 				"____________________";
 	
@@ -177,7 +182,7 @@ CurrentStage.prototype.setupThreeStep = function(){
 						"   x                "+
 						"  xxx               "+
 						"_xxxxx______________"+
-						"__xxx_______________"+
+						"__xxxx______________"+
 						"___x________________";
 	
 	// track the row for debris
@@ -263,7 +268,7 @@ function Worker(){
 	this.workTarget="";
 	//randomizing worker symbol
 	var sym = Math.floor(Math.random() * (10 - 0));
-	//alert(sym);
+	
 	switch(sym) {
     case 0:
         this.text = "☼";
@@ -307,6 +312,20 @@ function Worker(){
 	this.builds=0;
 }
 /*********************************************************
+prints out workers stats
+**********************************************************/
+Worker.prototype.print=function(){
+	
+	
+	document.getElementById("worker").innerHTML = 	
+	"Worker x:"+this.x+"<br>"+
+	"Worker y:"+this.y+"<br>"+
+	"Worker item:"+this.item+"<br>"+
+	"WorkTarget:"+this.workTarget+"<br>"+
+	"Worker left:"+curStage.grid[this.x-1][this.y].text+"<br>";
+	
+}
+/*********************************************************
 The worker checks to see if he is clearing, digging, or building
 **********************************************************/
 Worker.prototype.jobCheck=function(){
@@ -347,11 +366,7 @@ Worker.prototype.homeCheck=function(){
 	return false;
 }
 /*********************************************************
-The worker looks at the three squares to his left up and down
-and returns whether he needs to go up or down to continue left
-OXX   W = worker
-OWX   X = space not checked
-OXX   O = space check
+The worker looks left
 **********************************************************/
 Worker.prototype.leftCheck=function(){
 	
@@ -359,7 +374,7 @@ Worker.prototype.leftCheck=function(){
 			
 			return "upLeft";
 		}
-		else if(curStage.grid[this.x-1][this.y].text==" "){
+		else if(curStage.grid[this.x-1][this.y].text=="&nbsp;"){
 			return "downLeft";
 		}
 		else{
@@ -375,7 +390,7 @@ Worker.prototype.rightCheck=function(){
 			
 			return "upRight";
 		}
-		else if(curStage.grid[this.x+1][this.y].text==" "){
+		else if(curStage.grid[this.x+1][this.y].text=="&nbsp;"){
 			return "downRight";
 		}
 		else{
@@ -390,6 +405,7 @@ goes down left when encountering empty air
 **********************************************************/
 Worker.prototype.moveLeft=function(){
 	//logic for moving up and down
+	//alert("tick");
 	if(this.leftCheck() == "downLeft"){
 	this.x-=1;
 	this.y+=1;
@@ -423,19 +439,35 @@ Worker.prototype.moveRight=function(){
 The worker claims a dig spot
 **********************************************************/
 Worker.prototype.claimDig=function(){
+	
 	this.workTarget = curStage.nextDig();
 }
 /*********************************************************
 returns true if im at my dig spot, false if i need to keep moving
 **********************************************************/
 Worker.prototype.digSpotCheck=function(){
-  //compare this.workTarget to curStage.grid.x
+  //see if I am to the right of the dig target
+  var digX = this.workTarget.substr(0,1)*1;
+  var digY = this.workTarget.substr(2,1)*1;
+  if (digX == this.x-1){
+	return true;
+  }
+  else{
+	return false;
+  }
 }
 /*********************************************************
 The worker digs
 **********************************************************/
 Worker.prototype.dig=function(){
-
+//pick up dirt
+var digX = this.workTarget.substr(0,1)*1;
+var digY = this.workTarget.substr(2,1)*1;
+	this.item=dirt;
+	//remove the ground
+	curStage.grid[digX][digY-1].text = "&nbsp;";
+	//remove work target
+	this.workTarget="";
 }
 /*********************************************************
 The worker checks for debris
@@ -478,6 +510,8 @@ the worker analyses his situation and act accordingly
 to clear the area, dig the pit, and build the temple.
 **********************************************************/
 Worker.prototype.action= function(){
+//for debugging
+this.print();
 //clearing
 if (this.jobCheck() == "clearing"){
 	//move right to drop off item
@@ -501,12 +535,32 @@ if (this.jobCheck() == "clearing"){
 }
 //digging
 else if (this.jobCheck() == "digging"){
-	//check if there is work
-	if(curStage.digCheck()){
+	
+	
 		//check if I need work
-		if(this.workTarget=""){
-			//take the next available claim
-			this.claimDig();
+		if(this.workTarget==""){
+			//check if there is work
+			if(curStage.digCheck() ){
+				//take the next available claim
+				this.claimDig();
+			}
+			//no work left
+			else{
+				//hand is full go drop off
+				if(this.handCheck()){
+				
+					if(this.homeCheck()){
+						this.dropDebris();
+					}
+					else{
+						this.moveRight();
+					}
+				}
+				//hands are empty and everything is dug switch job to build
+				else{
+					this.job="building";
+				}
+			}
 		}
 		//already have a job time to go dig it up
 		else{
@@ -527,6 +581,7 @@ else if (this.jobCheck() == "digging"){
 				//check if im at my dig spot
 				if(this.digSpotCheck()){
 					//dig
+					this.dig();
 				}
 				//move towards my dig spot
 				else{
@@ -534,24 +589,9 @@ else if (this.jobCheck() == "digging"){
 				}
 			}
 		}
-	}
+	
 	//all work is claimed
-	else{
-		//hand is full go drop off
-		if(this.handCheck()){
-			
-			if(this.homeCheck()){
-				this.dropDebris();
-			}
-			else{
-				this.moveRight();
-			}
-		}
-		//hands are empty and everything is dug switch job to build
-		else{
-			this.job="building";
-		}
-	}
+	
 	//obtain a dig location
 	//if hands are empty proceed to dig location
 	//if at location take dirt_ground
@@ -627,7 +667,7 @@ DrawWorkers();
 //actual code
 
 //number of workers
-numberOfWorkers = 2;
+numberOfWorkers = 1;
 
 curStage = new CurrentStage(20, 6);
 
