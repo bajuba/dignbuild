@@ -29,6 +29,8 @@ To-Do URGENT:
 -Add a way to track finished temples
 
 -fix the workers brain, add in the function logic for clearing digging and building
+
+-jobCheck and action should be combined into one function
 ************************************************************
 Future Ideas and Goals:
 
@@ -135,6 +137,7 @@ CurrentStage.prototype.nextDig = function(){
 			return digSpot;
 		}
 	}
+	return "";
 	
 }
 /*********************************************************
@@ -322,6 +325,7 @@ Worker.prototype.jobCheck=function(){
 			return "digging";
 		}
 	}
+	//checking for 
 }
 /*********************************************************
 The worker checks if he's carrying something
@@ -422,6 +426,12 @@ Worker.prototype.claimDig=function(){
 	this.workTarget = curStage.nextDig();
 }
 /*********************************************************
+returns true if im at my dig spot, false if i need to keep moving
+**********************************************************/
+Worker.prototype.digSpotCheck=function(){
+  //compare this.workTarget to curStage.grid.x
+}
+/*********************************************************
 The worker digs
 **********************************************************/
 Worker.prototype.dig=function(){
@@ -470,7 +480,7 @@ to clear the area, dig the pit, and build the temple.
 Worker.prototype.action= function(){
 //clearing
 if (this.jobCheck() == "clearing"){
-	//alert("yes");
+	//move right to drop off item
 	if(this.handCheck()){
 		
 		if(this.homeCheck()){
@@ -496,11 +506,51 @@ else if (this.jobCheck() == "digging"){
 		//check if I need work
 		if(this.workTarget=""){
 			//take the next available claim
+			this.claimDig();
+		}
+		//already have a job time to go dig it up
+		else{
+			//first check if my hands are empty
+			//hand is full go drop off
+			if(this.handCheck()){
+				
+				if(this.homeCheck()){
+					this.dropDebris();
+				}
+				else{
+					this.moveRight();
+				}
+			}
+			//go and dig finally
+			//hands are empty
+			else{
+				//check if im at my dig spot
+				if(this.digSpotCheck()){
+					//dig
+				}
+				//move towards my dig spot
+				else{
+					this.moveLeft();
+				}
+			}
 		}
 	}
 	//all work is claimed
 	else{
-	
+		//hand is full go drop off
+		if(this.handCheck()){
+			
+			if(this.homeCheck()){
+				this.dropDebris();
+			}
+			else{
+				this.moveRight();
+			}
+		}
+		//hands are empty and everything is dug switch job to build
+		else{
+			this.job="building";
+		}
 	}
 	//obtain a dig location
 	//if hands are empty proceed to dig location
