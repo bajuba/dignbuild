@@ -128,6 +128,18 @@ CurrentStage.prototype.digCheck = function(){
 	return false;
 }
 /*********************************************************
+returns true if there are unclaimed builds
+**********************************************************/
+CurrentStage.prototype.buildCheck = function(){
+	
+	for(i=0;i<this.buildSpots.length;i++){
+		if(this.buildSpots[i] != "claimed"){
+			return true;
+		}
+	}
+	return false;
+}
+/*********************************************************
 returns the next unclaimed dig and changes the value in 
 the array to claimed
 **********************************************************/
@@ -140,6 +152,24 @@ CurrentStage.prototype.nextDig = function(){
 			this.digSpots[i] = "claimed";
 			
 			return digSpot;
+		}
+	}
+	return "";
+	
+}
+/*********************************************************
+returns the next unclaimed dig and changes the value in 
+the array to claimed
+**********************************************************/
+CurrentStage.prototype.nextBuild = function(){
+	
+	for(i=0;i<this.buildSpots.length;i++){
+		
+		if(this.buildSpots[i] != "claimed"){
+			var buildSpot = this.buildSpots[i];
+			this.buildSpots[i] = "claimed";
+			
+			return buildSpot;
 		}
 	}
 	return "";
@@ -228,7 +258,7 @@ CurrentStage.prototype.setupThreeStep = function(){
 	}
 	
 	//finding build spots
-	for(i=0;i<6;i++){
+	for(i=5;i>=1;i--){
 	
 		for(k=0;k<20;k++){
 						
@@ -323,30 +353,13 @@ Worker.prototype.print=function(){
 	"Worker item:"+this.item+"<br>"+
 	"WorkTarget:"+this.workTarget+"<br>"+
 	"Worker left:"+curStage.grid[this.x-1][this.y].text+"<br>"+
-	"Job:"+this.jobCheck;
+	"Worker right:";
+	
+	
+	document.getElementById("worker").innerHTML +="Job:"+this.jobCheck();
 	
 }
-/*********************************************************
-The worker checks to see if he is clearing, digging, or building
-**********************************************************/
-Worker.prototype.jobCheck=function(){
-	//checking for debris
-	if (curStage.debrisCheck()){
-		return "clearing";
-	}
-	//no debris
-	else{
-		//checking hand
-		if (this.handCheck()){
-			return "clearing";
-		}
-		//hands empty
-		else{
-			return "digging";
-		}
-	}
-	//checking for 
-}
+
 /*********************************************************
 The worker checks if he's carrying something
 true means yes
@@ -361,7 +374,7 @@ Worker.prototype.handCheck=function(){
 The worker checks if he's home
 **********************************************************/
 Worker.prototype.homeCheck=function(){
-	if( this.x == curStage.x){
+	if( this.x == curStage.x-1){
 		return true;
 	}
 	return false;
@@ -387,13 +400,15 @@ The worker looks at the square to his right
 **********************************************************/
 Worker.prototype.rightCheck=function(){
 	
+	
 		if(curStage.grid[this.x+1][this.y].text=="_" && curStage.grid[this.x+1][this.y-1].text=="_"){
 			return "upRight";
 		}
-		else if(curStage.grid[this.x+1][this.y].text=="&nbsp;"){
+		else if(curStage.grid[this.x+1][this.y].text==" "){
 			return "downRight";
 		}
 		else{
+			
 			return "right";
 		}
 	
@@ -407,15 +422,15 @@ Worker.prototype.moveLeft=function(){
 	//logic for moving up and down
 	//alert("tick");
 	if(this.leftCheck() == "downLeft"){
-	this.x-=1;
-	this.y+=1;
+		this.x-=1;
+		this.y+=1;
 	}
 	else if(this.leftCheck() == "upLeft"){
-	this.x-=1;
-	this.y-=1;
+		this.x-=1;
+		this.y-=1;
 	}
 	else{
-	this.x-=1;
+		this.x-=1;
 	}
 }
 /*********************************************************
@@ -424,15 +439,15 @@ The worker moves right (down when encountering air)
 Worker.prototype.moveRight=function(){
 	//logic for moving up and down
 	if(this.rightCheck() == "downRight"){
-	this.x+=1;
-	this.y+=1;
+		this.x+=1;
+		this.y+=1;
 	}
 	if(this.rightCheck() == "upRight"){
-	this.x+=1;
-	this.y-=1;
+		this.x+=1;
+		this.y-=1;
 	}
 	else{
-	this.x+=1;
+		this.x+=1
 	}
 }
 /*********************************************************
@@ -499,7 +514,8 @@ var buildX = this.workTarget.substr(0,1)*1;
 var buildY = this.workTarget.substr(2,1)*1;
 	this.item="&nbsp;";
 	//place a brick below or to the left
-		curStage.grid[digX][digY].text = brick;
+		curStage.grid[buildX][buildY].text = brick;
+		curStage.grid[buildX][buildY-1].text = "_";
 	//remove work target
 	this.workTarget="";
 }
@@ -542,7 +558,30 @@ Worker.prototype.dropDebris=function(){
 	document.getElementById("tree").innerHTML = curStage.tree;
 	document.getElementById("rock").innerHTML = curStage.rock;
 }
-
+/*********************************************************
+The worker checks to see if he is clearing, digging, or building
+**********************************************************/
+Worker.prototype.jobCheck=function(){
+	//checking for debris
+	if (curStage.debrisCheck()){
+		return "clearing";
+	}
+	//no debris
+	else if (curStage.digCheck()){
+		//checking hand
+		if (this.handCheck()){
+			return "clearing";
+		}
+		//hands empty
+		else{
+			return "digging";
+		}
+	}
+	else{
+	 return "building";
+	}
+	//checking for 
+}
 /*********************************************************
 the worker analyses his situation and act accordingly
 to clear the area, dig the pit, and build the temple.
@@ -632,7 +671,7 @@ else{
 		//check if i need work
 		if(this.workTarget==""){
 			//check if there is work
-			if(curstage.buildCheck()){
+			if(curStage.buildCheck()){
 				//take the next available claim
 				this.claimBuild();
 			}
@@ -752,7 +791,7 @@ for(var w=0;w<numberOfWorkers;w++)
 addSpans(20,6);
 curStage.setupThreeStep();
 
-var gameclock = setInterval("gameLoop()", 500);
+var gameclock = setInterval("gameLoop()", 50);
 
 </script>
 
