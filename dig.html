@@ -322,7 +322,8 @@ Worker.prototype.print=function(){
 	"Worker y:"+this.y+"<br>"+
 	"Worker item:"+this.item+"<br>"+
 	"WorkTarget:"+this.workTarget+"<br>"+
-	"Worker left:"+curStage.grid[this.x-1][this.y].text+"<br>";
+	"Worker left:"+curStage.grid[this.x-1][this.y].text+"<br>"+
+	;
 	
 }
 /*********************************************************
@@ -443,7 +444,7 @@ Worker.prototype.claimDig=function(){
 	this.workTarget = curStage.nextDig();
 }
 /*********************************************************
-returns true if im at my dig spot, false if i need to keep moving
+returns true if I am at my dig spot, false if I need to keep moving
 **********************************************************/
 Worker.prototype.digSpotCheck=function(){
   //see if I am to the right of the dig target
@@ -535,8 +536,6 @@ if (this.jobCheck() == "clearing"){
 }
 //digging
 else if (this.jobCheck() == "digging"){
-	
-	
 		//check if I need work
 		if(this.workTarget==""){
 			//check if there is work
@@ -589,19 +588,20 @@ else if (this.jobCheck() == "digging"){
 				}
 			}
 		}
-	
-	//all work is claimed
-	
-	//obtain a dig location
-	//if hands are empty proceed to dig location
-	//if at location take dirt_ground
-	//if hands full travel right
-	//if home drop dirt and remove work target
-
 }
 //building NOTE!!!!!!! remember to add an underscore above each brick placed for movement tracking!!!!
 else{
-
+		
+		//check if i need work
+		if(this.workTarget==""){
+			//check if there is work
+			if(curstage.buildCheck()){
+				//take the next available claim
+				this.claimBuild();
+			}
+			//no work left
+			else{
+		}
 	}
 
 }
