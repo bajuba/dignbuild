@@ -323,7 +323,7 @@ Worker.prototype.print=function(){
 	"Worker item:"+this.item+"<br>"+
 	"WorkTarget:"+this.workTarget+"<br>"+
 	"Worker left:"+curStage.grid[this.x-1][this.y].text+"<br>"+
-	;
+	"Job:"+this.jobCheck;
 	
 }
 /*********************************************************
@@ -361,7 +361,7 @@ Worker.prototype.handCheck=function(){
 The worker checks if he's home
 **********************************************************/
 Worker.prototype.homeCheck=function(){
-	if( this.x == 19){
+	if( this.x == curStage.x){
 		return true;
 	}
 	return false;
@@ -388,7 +388,6 @@ The worker looks at the square to his right
 Worker.prototype.rightCheck=function(){
 	
 		if(curStage.grid[this.x+1][this.y].text=="_" && curStage.grid[this.x+1][this.y-1].text=="_"){
-			
 			return "upRight";
 		}
 		else if(curStage.grid[this.x+1][this.y].text=="&nbsp;"){
@@ -444,6 +443,13 @@ Worker.prototype.claimDig=function(){
 	this.workTarget = curStage.nextDig();
 }
 /*********************************************************
+The worker claims a build spot
+**********************************************************/
+Worker.prototype.claimBuild=function(){
+	
+	this.workTarget = curStage.nextBuild();
+}
+/*********************************************************
 returns true if I am at my dig spot, false if I need to keep moving
 **********************************************************/
 Worker.prototype.digSpotCheck=function(){
@@ -451,6 +457,20 @@ Worker.prototype.digSpotCheck=function(){
   var digX = this.workTarget.substr(0,1)*1;
   var digY = this.workTarget.substr(2,1)*1;
   if (digX == this.x-1){
+	return true;
+  }
+  else{
+	return false;
+  }
+}
+/*********************************************************
+returns true if I am at my build spot, false if I need to keep moving
+**********************************************************/
+Worker.prototype.buildSpotCheck=function(){
+  //see if I am to the right of the build target
+  var buildX = this.workTarget.substr(0,1)*1;
+  var buildY = this.workTarget.substr(2,1)*1;
+  if (buildX == this.x-1){
 	return true;
   }
   else{
@@ -469,6 +489,28 @@ var digY = this.workTarget.substr(2,1)*1;
 	curStage.grid[digX][digY-1].text = "&nbsp;";
 	//remove work target
 	this.workTarget="";
+}
+/*********************************************************
+The worker builds
+**********************************************************/
+Worker.prototype.build=function(){
+//pick up dirt
+var buildX = this.workTarget.substr(0,1)*1;
+var buildY = this.workTarget.substr(2,1)*1;
+	this.item="&nbsp;";
+	//place a brick below or to the left
+		curStage.grid[digX][digY].text = brick;
+	//remove work target
+	this.workTarget="";
+}
+/*********************************************************
+The worker gains a brick
+**********************************************************/
+Worker.prototype.obtainBrick=function(){
+//pick up brick
+
+	this.item=brick;
+	
 }
 /*********************************************************
 The worker checks for debris
@@ -500,12 +542,7 @@ Worker.prototype.dropDebris=function(){
 	document.getElementById("tree").innerHTML = curStage.tree;
 	document.getElementById("rock").innerHTML = curStage.rock;
 }
-/*********************************************************
-The worker goes to obtain brick
-**********************************************************/
-Worker.prototype.obtainBrick=function(){
 
-}
 /*********************************************************
 the worker analyses his situation and act accordingly
 to clear the area, dig the pit, and build the temple.
@@ -601,6 +638,35 @@ else{
 			}
 			//no work left
 			else{
+			}
+		}
+		//i already have a job
+		else{
+			//i have a brick
+			if(this.handCheck()){
+				//place my brick
+				if(this.buildSpotCheck()){
+					this.build();
+				}
+				// go to build spot
+				else{
+					this.moveLeft();
+				}
+			}
+			//grab a brick
+			//hands are empty
+			else{
+				//check if im at my home spot
+				if(this.homeCheck()){
+					//grab a brick
+					this.obtainBrick();
+				}
+				//move towards my home spot
+				else{
+					this.moveRight();
+				}
+			}
+			
 		}
 	}
 
